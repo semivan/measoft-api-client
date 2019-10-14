@@ -1,0 +1,27 @@
+{
+  "name": "semivan/measoft-api-client",
+  "description": "PHP API клиент для MeaSoft",
+  "type": "Library",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "keywords": [
+    "measoft",
+    "client",
+    "api"
+  ],
+  "authors": [
+    {
+      "name": "Ivan Semenikhin",
+      "email": "semenihin.ivan@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.1",
+    "guzzlehttp/guzzle": "^6.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Measoft\\": "src/"
+    }
+  }
+}
