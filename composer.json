@@ -1,7 +1,7 @@
 {
   "name": "semivan/measoft-api-client",
   "description": "PHP API клиент для MeaSoft",
-  "type": "Library",
+  "type": "library",
   "license": "MIT",
   "minimum-stability": "dev",
   "keywords": [
