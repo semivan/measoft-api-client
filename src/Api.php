@@ -3,83 +3,76 @@
 namespace Measoft;
 
 use GuzzleHttp\Client as HttpClient;
+use SimpleXMLElement;
 
 class Api
 {
-	const API_URL = 'https://home.courierexe.ru/api/';
+    const API_URL = 'https://home.courierexe.ru/api/';
 
-	/**
-	 * @var string $login Логин
-	 */
-	private $login;
+    /** @var string $login Логин */
+    private $login;
 
-	/**
-	 * @var string $password Пароль
-	 */
-	private $password;
+    /** @var string $password Пароль */
+    private $password;
 
-	/**
-	 * @var string $extracode Код службы
-	 */
-	private $extracode;
+    /** @var string $extracode Код службы */
+    private $extracode;
 
-	/**
-	 * @var HttpClient $httpClient
-	 */
-	private $httpClient;
-	
-	/**
-	 * @param string $login     Логин
-	 * @param string $password  Пароль
-	 * @param string $extracode Код службы
-	 */
-	public function __construct(string $login, string $password, string $extracode)
-	{
-		$this->login      = $login;
-		$this->password   = $password;
-		$this->extracode  = $extracode;
-		$this->httpClient = new HttpClient([
-			'base_uri' => self::API_URL,
-		]);
+    /** @var HttpClient $httpClient */
+    private $httpClient;
+
+    /**
+     * @param string $login     Логин
+     * @param string $password  Пароль
+     * @param string $extracode Код службы
+     */
+    public function __construct(string $login, string $password, string $extracode)
+    {
+        $this->login      = $login;
+        $this->password   = $password;
+        $this->extracode  = $extracode;
+        $this->httpClient = new HttpClient([
+            'base_uri' => self::API_URL,
+        ]);
     }
 
     /**
      * Отправка запроса к АПИ
      *
-     * @param \SimpleXMLElement $xml      XML с запросом
-     * @param boolean           $withAuth Добавлять ли к запросу параметры авторизации?
+     * @param SimpleXMLElement $xml XML с запросом
+     * @param boolean $withAuth Добавлять ли к запросу параметры авторизации?
      * @return Response
      */
-    public function request(\SimpleXMLElement $xml, bool $withAuth = true): Response
+    public function request(SimpleXMLElement $xml, bool $withAuth = true): Response
     {
         //header('Content-type: text/xml'); print($xml->asXML()); exit;
 
-		if ($withAuth) {
+        if ($withAuth) {
             $auth = $xml->addChild('auth');
             $auth->addAttribute('login', $this->login);
             $auth->addAttribute('pass', $this->password);
             $auth->addAttribute('extra', $this->extracode);
         }
 
-		$sendData = [
+        $sendData = [
             'body'    => $xml->asXML(),
             'headers' => [
                 'Content-Type' => 'text/xml; charset=UTF8',
             ],
         ];
 
-		try {
-			$response   = $this->httpClient->request('POST', '', $sendData);
-			$statusCode = $response->getStatusCode();
-			$message    = $response->getReasonPhrase();
-		} catch (\Exception $e) {
-			$statusCode = $e->getCode();
-			$message    = $e->getMessage();
-		}
+        try {
+            $response   = $this->httpClient->request('POST', '', $sendData);
+            $statusCode = $response->getStatusCode();
+            $message    = $response->getReasonPhrase();
+        } catch (\Exception $e) {
+            $statusCode = $e->getCode();
+            $message    = $e->getMessage();
+        }
 
-		if ($statusCode !== 200) {
-			return new Response(false, null, "$message ($statusCode )");
-		}
+        if ($statusCode !== 200) {
+            return new Response(false, null, "$message ($statusCode )");
+        }
 
         $content = $response->getBody()->getContents();
         
