@@ -33,9 +33,9 @@ class PvzSearchOperation extends AbstractOperation
      * Поиск по городу получателя
      *
      * @param string $town Город получателя
-     * @return self|null
+     * @return self
      */
-    public function town(string $town): ?self
+    public function town(string $town): self
     {
         $this->town = $town;
 
@@ -46,9 +46,9 @@ class PvzSearchOperation extends AbstractOperation
      * Фильтр по родительскому элементу
      *
      * @param string $parentCode Родительсий элемент
-     * @return self|null
+     * @return self
      */
-    public function parentCode(string $parentCode): ?self
+    public function parentCode(string $parentCode): self
     {
         $this->parentCode = $parentCode;
 
@@ -59,9 +59,9 @@ class PvzSearchOperation extends AbstractOperation
      * Фильтр по приему наличных
      *
      * @param bool $acceptCash Признак приема наличных
-     * @return self|null
+     * @return self
      */
-    public function acceptCash(bool $acceptCash): ?self
+    public function acceptCash(bool $acceptCash): self
     {
         $this->acceptCash = $acceptCash ? 'YES' : 'NO';
 
@@ -72,9 +72,9 @@ class PvzSearchOperation extends AbstractOperation
      * Фильтр по приему банковских карт
      *
      * @param bool $acceptCard Признак приема банковских карт
-     * @return self|null
+     * @return self
      */
-    public function acceptCard(bool $acceptCard): ?self
+    public function acceptCard(bool $acceptCard): self
     {
         $this->acceptCard = $acceptCard ? 'YES' : 'NO';
 
@@ -85,9 +85,9 @@ class PvzSearchOperation extends AbstractOperation
      * Фильтр по наличию примерки
      *
      * @param bool $acceptFitting Признак наличия примерки
-     * @return self|null
+     * @return self
      */
-    public function acceptFitting(bool $acceptFitting): ?self
+    public function acceptFitting(bool $acceptFitting): self
     {
         $this->acceptFitting = $acceptFitting ? 'YES' : 'NO';
 
@@ -98,9 +98,9 @@ class PvzSearchOperation extends AbstractOperation
      * Фильтр по доступности физическим лицам
      *
      * @param bool $acceptIndividuals Признак доступности физическим лицам
-     * @return self|null
+     * @return self
      */
-    public function acceptIndividuals(bool $acceptIndividuals): ?self
+    public function acceptIndividuals(bool $acceptIndividuals): self
     {
         $this->acceptIndividuals = $acceptIndividuals ? 'YES' : 'NO';
 
@@ -114,9 +114,9 @@ class PvzSearchOperation extends AbstractOperation
      * @param float|null $lg Долгота левого верхнего угла
      * @param float|null $rt Широта правого нижнего угла
      * @param float|null $rg Долгота правого нижнего угла
-     * @return self|null
+     * @return self
      */
-    public function coordinates(float $lt = null, float $lg = null, float $rt = null, float $rg = null): ?self
+    public function coordinates(float $lt = null, float $lg = null, float $rt = null, float $rg = null): self
     {
         $this->coordinates = [
             'lt' => $lt,

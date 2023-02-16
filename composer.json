@@ -3,7 +3,7 @@
   "description": "PHP API клиент для MeaSoft",
   "type": "library",
   "license": "MIT",
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "keywords": [
     "measoft",
     "client",
@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": ">=7.1",
-    "guzzlehttp/guzzle": "6.*",
+    "guzzlehttp/guzzle": ">=6",
     "ext-simplexml": "*",
     "ext-libxml": "*"
   },
