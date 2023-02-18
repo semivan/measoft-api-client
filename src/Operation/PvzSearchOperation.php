@@ -11,6 +11,9 @@ class PvzSearchOperation extends AbstractOperation
     /** @var string $town Поиск по городу получателя */
     private $town;
 
+    /** @var int $code Код пункта выдачи */
+    private $code;
+
     /** @var string $parentCode Фильтр по родительскому элементу */
     private $parentCode;
 
@@ -38,6 +41,20 @@ class PvzSearchOperation extends AbstractOperation
     public function town(string $town): self
     {
         $this->town = $town;
+
+        return $this;
+    }
+
+    /**
+     * Фильтр по коду пункта выдачи
+     *
+     * @param int $code
+     *
+     * @return $this
+     */
+    public function code(int $code): self
+    {
+        $this->code = $code;
 
         return $this;
     }
@@ -138,6 +155,7 @@ class PvzSearchOperation extends AbstractOperation
         $xml = $this->createXml('pvzlist');
 
         $xml->addChild('town', $this->town);
+        $xml->addChild('code', $this->code);
         $xml->addChild('parentcode', $this->parentCode);
         $xml->addChild('acceptcash', $this->acceptCash);
         $xml->addChild('acceptcard', $this->acceptCard);
