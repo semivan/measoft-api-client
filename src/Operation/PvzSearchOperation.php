@@ -4,10 +4,13 @@ namespace Measoft\Operation;
 
 use Measoft\MeasoftException;
 use Measoft\Object\Pvz;
+use Measoft\Traits\Limitable;
 use SimpleXMLElement;
 
 class PvzSearchOperation extends AbstractOperation
 {
+    use Limitable;
+
     /** @var string $town Поиск по городу получателя */
     private $town;
 
@@ -153,6 +156,7 @@ class PvzSearchOperation extends AbstractOperation
     private function buildXml(): SimpleXMLElement
     {
         $xml = $this->createXml('pvzlist');
+        $this->buildLimitXML($xml);
 
         $xml->addChild('town', $this->town);
         $xml->addChild('code', $this->code);
