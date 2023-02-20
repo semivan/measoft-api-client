@@ -4,10 +4,13 @@ namespace Measoft\Operation;
 
 use Measoft\MeasoftException;
 use Measoft\Object\Item;
+use Measoft\Traits\Limitable;
 use SimpleXMLElement;
 
 class ItemSearchOperation extends AbstractOperation
 {
+    use Limitable;
+
     /** @var string $code Поиск по внутреннему коду системы */
     private $code;
 
@@ -29,14 +32,6 @@ class ItemSearchOperation extends AbstractOperation
     /** @var bool $inStock Поиск по наличию на складе (true - в наличии, false - не в наличии, null - все) */
     private $inStock;
 
-    /** @var int $offset Задает номер записи результата, начиная с которой выдавать ответ */
-    private $offset = 0;
-
-    /** @var int $limit Задает количество записей результата, которые нужно вернуть */
-    private $limit = 10000;
-
-    /** @var string $countAll YES указывает на необходимость подсчета общего количества найденных совпадений */
-    private $countAll;
 
     /**
      * Поиск по внутреннему коду системы
@@ -130,45 +125,6 @@ class ItemSearchOperation extends AbstractOperation
     }
 
     /**
-     * Задать номер записи результата, начиная с которой выдавать ответ
-     *
-     * @param int $offset Номер записи
-     * @return self
-     */
-    public function offset(int $offset): self
-    {
-        $this->offset = $offset;
-
-        return $this;
-    }
-
-    /**
-     * Задаеть количество записей результата, которые нужно вернуть
-     *
-     * @param int $limit Количество записей результата
-     * @return self
-     */
-    public function limit(int $limit): self
-    {
-        $this->limit = $limit;
-
-        return $this;
-    }
-
-    /**
-     * Установить подсчет общего количества найденных совпадений
-     *
-     * @param bool $countAll Вести подсчет общего количества найденных совпадений
-     * @return self
-     */
-    public function countAll(bool $countAll = true): self
-    {
-        $this->countAll = $countAll === true ? 'YES' : null;
-
-        return $this;
-    }
-
-    /**
      * Сформировать XML
      *
      * @return SimpleXMLElement
@@ -178,7 +134,6 @@ class ItemSearchOperation extends AbstractOperation
         $xml        = $this->createXml('itemlist');
         $codesearch = $xml->addChild('codesearch');
         $conditions = $xml->addChild('conditions');
-        $limit      = $xml->addChild('limit');
 
         $codesearch->addChild('code', $this->code);
         $codesearch->addChild('article', $this->article);
@@ -189,9 +144,7 @@ class ItemSearchOperation extends AbstractOperation
         $conditions->addChild('name', $this->name);
         $conditions->addChild('quantity', $this->inStock === true ? 'EXISTING_ONLY' : ($this->inStock === false ? 'NOT_EXISTING_ONLY' : 'ALL'));
 
-        $limit->addChild('limitfrom', $this->offset);
-        $limit->addChild('limitcount', $this->limit);
-        $limit->addChild('countall', $this->countAll);
+        $this->buildLimitXML($xml);
 
         return $xml;
     }
