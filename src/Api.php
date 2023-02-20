@@ -85,7 +85,7 @@ class Api
         }
         
         if ($error = intval($xml->attributes()['error'] ?? 0)) {
-            return new Response(false, $xml, $this->getErrorMessage($error));
+            return new Response(false, $xml, $this->getErrorMessage($error, (string) $xml));
         }
         
         return new Response(true, $xml);
@@ -97,7 +97,7 @@ class Api
      * @param integer $code Код ошибки
      * @return string
      */
-    private function getErrorMessage(int $code): string
+    private function getErrorMessage(int $code, string $alternative): string
     {
         $errors = [
             0  => 'OK',
@@ -140,6 +140,6 @@ class Api
             39 => 'Тариф не найден',
         ];
 
-        return $errors[$code] ?? 'Неизвестная ошибка';
+        return $errors[$code] ?? sprintf('Неизвестная ошибка (%d: %s)', $code, $alternative);
     }
 }
