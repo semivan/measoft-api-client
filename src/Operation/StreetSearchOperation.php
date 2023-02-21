@@ -4,10 +4,13 @@ namespace Measoft\Operation;
 
 use Measoft\MeasoftException;
 use Measoft\Object\Street;
+use Measoft\Traits\Limitable;
 use SimpleXMLElement;
 
 class StreetSearchOperation extends AbstractOperation
 {
+    use Limitable;
+
     /** @var string $town Поиск по населенному пункту (Название или код) */
     private $town;
 
@@ -22,15 +25,6 @@ class StreetSearchOperation extends AbstractOperation
 
     /** @var string $fullName Поиск улиц, название вместе с типом улицы которых соответствует указанной строке */
     private $fullName;
-
-    /** @var int $offset Задает номер записи результата, начиная с которой выдавать ответ */
-    private $offset = 0;
-
-    /** @var int $limit Задает количество записей результата, которые нужно вернуть */
-    private $limit = 10000;
-
-    /** @var string $countAll YES указывает на необходимость подсчета общего количества найденных совпадений */
-    private $countAll;
 
     /**
      * Поиск по населенному пункту
@@ -98,45 +92,6 @@ class StreetSearchOperation extends AbstractOperation
     }
 
     /**
-     * Задать номер записи результата, начиная с которой выдавать ответ
-     *
-     * @param int $offset Номер записи
-     * @return self
-     */
-    public function offset(int $offset): self
-    {
-        $this->offset = $offset;
-
-        return $this;
-    }
-
-    /**
-     * Задаеть количество записей результата, которые нужно вернуть
-     *
-     * @param int $limit Количество записей результата
-     * @return self
-     */
-    public function limit(int $limit): self
-    {
-        $this->limit = $limit;
-
-        return $this;
-    }
-
-    /**
-     * Установить подсчет общего количества найденных совпадений
-     *
-     * @param bool $countAll Вести подсчет общего количества найденных совпадений
-     * @return self
-     */
-    public function countAll(bool $countAll = true): self
-    {
-        $this->countAll = $countAll === true ? 'YES' : null;
-
-        return $this;
-    }
-
-    /**
      * Сформировать XML
      *
      * @return SimpleXMLElement
@@ -145,7 +100,6 @@ class StreetSearchOperation extends AbstractOperation
     {
         $xml        = $this->createXml('streetlist');
         $conditions = $xml->addChild('conditions');
-        $limit      = $xml->addChild('limit');
 
         $conditions->addChild('town', $this->town);
         $conditions->addChild('namecontains', $this->nameContains);
@@ -153,9 +107,7 @@ class StreetSearchOperation extends AbstractOperation
         $conditions->addChild('name', $this->name);
         $conditions->addChild('fullname', $this->fullName);
 
-        $limit->addChild('limitfrom', $this->offset);
-        $limit->addChild('limitcount', $this->limit);
-        $limit->addChild('countall', $this->countAll);
+        $this->buildLimitXML($xml);
 
         return $xml;
     }

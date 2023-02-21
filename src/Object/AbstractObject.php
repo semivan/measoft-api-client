@@ -2,10 +2,13 @@
 
 namespace Measoft\Object;
 
+use JsonSerializable;
 use Measoft\MeasoftException;
+use ReflectionClass;
+use ReflectionProperty;
 use SimpleXMLElement;
 
-abstract class AbstractObject
+abstract class AbstractObject implements JsonSerializable
 {
     abstract public static function getFromXml(SimpleXMLElement $xml, bool $fromNode = true);
 
@@ -56,9 +59,43 @@ abstract class AbstractObject
 
             default:
                 throw new MeasoftException('Неверно указан тип переменной');
-                break;
         }
 
         return $value;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $results = [];
+
+        foreach ($this->getJsonPropertiesList() as $name => $getter) {
+            $results[$name] = $this->$getter();
+        }
+
+        return $results;
+    }
+
+    private function getJsonPropertiesList(): array
+    {
+        static $cache;
+
+        if (!isset($cache[static::class])) {
+            $cache[static::class] = [];
+            $reflectionClass = new ReflectionClass(static::class);
+            $properties = $reflectionClass->getProperties(ReflectionProperty::IS_PROTECTED);
+
+            foreach($properties as $property) {
+                $propertyName = $property->getName();
+                $getter = 'get' . strtoupper($propertyName[0]) . substr($propertyName, 1);
+
+                if (!($reflectionClass->hasMethod($getter) and $reflectionClass->getMethod($getter)->isPublic())) {
+                    continue;
+                }
+
+                $cache[static::class][$propertyName] = $getter;
+            }
+        }
+
+        return $cache[static::class];
     }
 }
