@@ -220,7 +220,7 @@ class OrderSearchOperation extends AbstractOperation
      *
      * @return SimpleXMLElement
      */
-    private function buildXml(): SimpleXMLElement
+    protected function buildXml(): SimpleXMLElement
     {
         $xml = $this->createXml('statusreq');
         $xml->addChild('client', $this->client);
@@ -246,15 +246,7 @@ class OrderSearchOperation extends AbstractOperation
      */
     public function search(): array
     {
-        $response = $this->request($this->buildXml());
-
-        if (!$response->isSuccess()) {
-            throw new MeasoftException($response->getError());
-        }
-
-        $resultXml = $response->getXml();
-
-        foreach ($resultXml as $item) {
+        foreach ($this->getResults() as $item) {
             $result[] = Order::getFromXml($item);
         }
 

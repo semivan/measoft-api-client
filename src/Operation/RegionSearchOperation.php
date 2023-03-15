@@ -93,7 +93,7 @@ class RegionSearchOperation extends AbstractOperation
      *
      * @return SimpleXMLElement
      */
-    private function buildXml(): SimpleXMLElement
+    protected function buildXml(): SimpleXMLElement
     {
         $xml        = $this->createXml('regionlist');
         $codesearch = $xml->addChild('codesearch');
@@ -117,15 +117,7 @@ class RegionSearchOperation extends AbstractOperation
      */
     public function search(): array
     {
-        $response = $this->request($this->buildXml(), false);
-
-        if (!$response->isSuccess()) {
-            throw new MeasoftException($response->getError());
-        }
-
-        $resultXml = $response->getXml();
-
-        foreach ($resultXml as $item) {
+        foreach ($this->getResults(false) as $item) {
             $result[] = Region::getFromXml($item);
         }
 

@@ -111,7 +111,7 @@ class CalculatorOperation extends AbstractOperation
      *
      * @return SimpleXMLElement
      */
-    private function buildXml(): SimpleXMLElement
+    protected function buildXml(): SimpleXMLElement
     {
         $xml  = $this->createXml('calculator');
         $calc = $xml->addChild('calc');
@@ -135,15 +135,7 @@ class CalculatorOperation extends AbstractOperation
      */
     public function calculate(): array
     {
-        $response = $this->request($this->buildXml());
-
-        if (!$response->isSuccess()) {
-            throw new MeasoftException($response->getError());
-        }
-
-        $resultXml = $response->getXml();
-
-        foreach ($resultXml as $item) {
+        foreach ($this->getResults() as $item) {
             $result[] = CalculationResult::getFromXml($item);
         }
 
