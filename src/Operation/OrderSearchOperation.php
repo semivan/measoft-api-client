@@ -2,6 +2,7 @@
 
 namespace Measoft\Operation;
 
+use InvalidArgumentException;
 use Measoft\MeasoftException;
 use Measoft\Object\Order;
 use SimpleXMLElement;
@@ -59,6 +60,9 @@ class OrderSearchOperation extends AbstractOperation
 
     /** @var string $quickStatus Указывает "глубину" передаваемых статусов */
     private $quickStatus;
+
+    /** @var int $streamId - Идентификатор потока */
+    private $streamId;
 
     /**
      * Признак клиента или агента
@@ -207,6 +211,26 @@ class OrderSearchOperation extends AbstractOperation
     }
 
     /**
+     * Задаёт идентификатор потока. Если у вас несколько интеграций и каждая нуждается в получении статусов,
+     * вы можете передавать данный параметр и тем самым разделять получение и отметку об успешном получении статусов по заказам.
+     * Значение должно входить в промежуток от 100 до 10000 включительно.
+     *
+     * @param int $streamId
+     *
+     * @return $this
+     */
+    public function setStreamId(int $streamId): self
+    {
+        if ($streamId < 100 or $streamId > 10000) {
+            throw new InvalidArgumentException('Недопустимое значение streamId: %d', $streamId);
+        }
+
+        $this->streamId = $streamId;
+
+        return $this;
+    }
+
+    /**
      * Сформировать XML
      *
      * @return SimpleXMLElement
@@ -225,6 +249,7 @@ class OrderSearchOperation extends AbstractOperation
         $xml->addChild('done', $this->done);
         $xml->addChild('changes', $this->onlyLast);
         $xml->addChild('quickstatus', $this->quickStatus);
+        $xml->addChild('streamid', $this->streamId);
 
         return $xml;
     }
