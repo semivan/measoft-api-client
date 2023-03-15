@@ -13,10 +13,10 @@ use SimpleXMLElement;
 class CreateOrderOperation extends AbstractOperation
 {
     /** Типы оплаты */
-    const PAYMENT_TYPE_CASH  = 'CASH';
-    const PAYMENT_TYPE_CARD  = 'CARD';
-    const PAYMENT_TYPE_NONE  = 'NO';
-    const PAYMENT_TYPE_OTHER = 'OTHER';
+    public const PAYMENT_TYPE_CASH  = 'CASH';
+    public const PAYMENT_TYPE_CARD  = 'CARD';
+    public const PAYMENT_TYPE_NONE  = 'NO';
+    public const PAYMENT_TYPE_OTHER = 'OTHER';
 
     /** @var string $newFolder Признак нового заказа */
     private $newFolder;
@@ -217,7 +217,7 @@ class CreateOrderOperation extends AbstractOperation
      */
     public function setPayType(string $payType): self
     {
-        if (!in_array($payType, ['CASH', 'CARD', 'NO', 'OTHER', 'OPTION'])) {
+        if (!in_array($payType, [self::PAYMENT_TYPE_CASH, self::PAYMENT_TYPE_CARD, self::PAYMENT_TYPE_NONE, self::PAYMENT_TYPE_OTHER])) {
             throw new MeasoftException('Неверный способ оплаты');
         }
 

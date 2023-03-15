@@ -8,6 +8,18 @@ use SimpleXMLElement;
 
 class OrderSearchOperation extends AbstractOperation
 {
+    public const DONE_FLAG_NOT_DONE = 1;
+    public const DONE_FLAG_DONE = 2;
+    public const DONE_FLAG_NEW = 3;
+    public const DONE_FLAG_DELIVERY = 4;
+
+    private const DONE_FLAGS = [
+        self::DONE_FLAG_NOT_DONE => 'ONLY_NOT_DONE',
+        self::DONE_FLAG_DONE     => 'ONLY_DONE',
+        self::DONE_FLAG_NEW      => 'ONLY_NEW',
+        self::DONE_FLAG_DELIVERY => 'ONLY_DELIVERY',
+    ];
+
     /** @var string $client Признак клиента или агента */
     private $client;
 
@@ -162,29 +174,8 @@ class OrderSearchOperation extends AbstractOperation
      * @param int $done
      * @return self
      */
-    public function done(int $done): self
-    {
-        switch ($done) {
-            case 1:
-                $this->done = 'ONLY_NOT_DONE';
-                break;
-
-            case 2:
-                $this->done = 'ONLY_DONE';
-                break;
-
-            case 3:
-                $this->done = 'ONLY_NEW';
-                break;
-
-            case 4:
-                $this->done = 'ONLY_DELIVERY';
-                break;
-
-            default:
-                $this->done = null;
-                break;
-        }
+    public function done(int $done): self {
+        $this->done = self::DONE_FLAGS[$done] ?? null;
 
         return $this;
     }
