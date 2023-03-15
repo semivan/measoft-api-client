@@ -2,13 +2,17 @@
 
 namespace Measoft\Operation;
 
-use InvalidArgumentException;
 use Measoft\MeasoftException;
 use Measoft\Object\Order;
+use Measoft\Traits\Client;
+use Measoft\Traits\StreamId;
 use SimpleXMLElement;
 
 class OrderSearchOperation extends AbstractOperation
 {
+    use Client;
+    use StreamId;
+
     public const DONE_FLAG_NOT_DONE = 1;
     public const DONE_FLAG_DONE = 2;
     public const DONE_FLAG_NEW = 3;
@@ -20,9 +24,6 @@ class OrderSearchOperation extends AbstractOperation
         self::DONE_FLAG_NEW      => 'ONLY_NEW',
         self::DONE_FLAG_DELIVERY => 'ONLY_DELIVERY',
     ];
-
-    /** @var string $client Признак клиента или агента */
-    private $client;
 
     /** @var string $orderNumber Поиск по номеру заказа */
     private $orderNumber;
@@ -60,22 +61,6 @@ class OrderSearchOperation extends AbstractOperation
 
     /** @var string $quickStatus Указывает "глубину" передаваемых статусов */
     private $quickStatus;
-
-    /** @var int $streamId - Идентификатор потока */
-    private $streamId;
-
-    /**
-     * Признак клиента или агента
-     *
-     * @param bool $client true - клиент, false - агент
-     * @return self
-     */
-    public function client(bool $client = true): self
-    {
-        $this->client = $client ? 'CLIENT' : 'AGENT';
-
-        return $this;
-    }
 
     /**
      * Поиск по номеру заказа
@@ -211,26 +196,6 @@ class OrderSearchOperation extends AbstractOperation
     }
 
     /**
-     * Задаёт идентификатор потока. Если у вас несколько интеграций и каждая нуждается в получении статусов,
-     * вы можете передавать данный параметр и тем самым разделять получение и отметку об успешном получении статусов по заказам.
-     * Значение должно входить в промежуток от 100 до 10000 включительно.
-     *
-     * @param int $streamId
-     *
-     * @return $this
-     */
-    public function setStreamId(int $streamId): self
-    {
-        if ($streamId < 100 or $streamId > 10000) {
-            throw new InvalidArgumentException('Недопустимое значение streamId: %d', $streamId);
-        }
-
-        $this->streamId = $streamId;
-
-        return $this;
-    }
-
-    /**
      * Сформировать XML
      *
      * @return SimpleXMLElement
@@ -238,7 +203,7 @@ class OrderSearchOperation extends AbstractOperation
     protected function buildXml(): SimpleXMLElement
     {
         $xml = $this->createXml('statusreq');
-        $xml->addChild('client', $this->client);
+        $this->buildClientXML($xml);
         $xml->addChild('orderno', $this->orderNumber);
         $xml->addChild('orderno2', $this->orderNumber2);
         $xml->addChild('ordercode', $this->orderCode);
@@ -249,7 +214,7 @@ class OrderSearchOperation extends AbstractOperation
         $xml->addChild('done', $this->done);
         $xml->addChild('changes', $this->onlyLast);
         $xml->addChild('quickstatus', $this->quickStatus);
-        $xml->addChild('streamid', $this->streamId);
+        $this->buildStreamIdXML($xml);
 
         return $xml;
     }
