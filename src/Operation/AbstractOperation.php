@@ -44,7 +44,7 @@ abstract class AbstractOperation
      * @param SimpleXMLElement $xml
      * @return void
      */
-    protected function removeEmptyXmlNodes(SimpleXMLElement &$xml)
+    protected function removeEmptyXmlNodes(SimpleXMLElement $xml)
     {
         $xpath = '/child::*//*[not(*) and not(@*) and not(text()[normalize-space()])]';
         $end   = false;
@@ -65,7 +65,7 @@ abstract class AbstractOperation
      * @param SimpleXMLElement $xml
      * @return void
      */
-    protected function removeEmptyXmlAttributes(SimpleXMLElement &$xml)
+    protected function removeEmptyXmlAttributes(SimpleXMLElement $xml)
     {
         $xpath = '//*[@*]';
 
