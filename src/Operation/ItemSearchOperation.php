@@ -129,7 +129,7 @@ class ItemSearchOperation extends AbstractOperation
      *
      * @return SimpleXMLElement
      */
-    private function buildXml(): SimpleXMLElement
+    protected function buildXml(): SimpleXMLElement
     {
         $xml        = $this->createXml('itemlist');
         $codesearch = $xml->addChild('codesearch');
@@ -157,15 +157,7 @@ class ItemSearchOperation extends AbstractOperation
      */
     public function search(): array
     {
-        $response = $this->request($this->buildXml());
-
-        if (!$response->isSuccess()) {
-            throw new MeasoftException($response->getError());
-        }
-
-        $resultXml = $response->getXml();
-
-        foreach ($resultXml as $item) {
+        foreach ($this->getResults() as $item) {
             $result[] = Item::getFromXml($item);
         }
 

@@ -40,7 +40,7 @@ class CancelOrderOperation extends AbstractOperation
      *
      * @return SimpleXMLElement
      */
-    private function buildXml(): SimpleXMLElement
+    protected function buildXml(): SimpleXMLElement
     {
         $xml   = $this->createXml('cancelorder');
         $order = $xml->addChild('order');
@@ -59,15 +59,7 @@ class CancelOrderOperation extends AbstractOperation
      */
     public function cancel()
     {
-        $response = $this->request($this->buildXml());
-
-        if (!$response->isSuccess()) {
-            throw new MeasoftException($response->getError());
-        }
-
-        $resultXml = $response->getXml();
-
-        foreach ($resultXml as $item) {
+        foreach ($this->getResults() as $item) {
             $errorCode = intval($item['error'] ?? 0);
 
             if ($errorCode) {

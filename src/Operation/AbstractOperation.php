@@ -3,10 +3,11 @@
 namespace Measoft\Operation;
 
 use Measoft\Api;
+use Measoft\MeasoftException;
 use Measoft\Response;
 use SimpleXMLElement;
 
-class AbstractOperation
+abstract class AbstractOperation
 {
     /** @var Api $api */
     protected $api;
@@ -43,7 +44,7 @@ class AbstractOperation
      * @param SimpleXMLElement $xml
      * @return void
      */
-    protected function removeEmptyXmlNodes(SimpleXMLElement &$xml)
+    protected function removeEmptyXmlNodes(SimpleXMLElement $xml)
     {
         $xpath = '/child::*//*[not(*) and not(@*) and not(text()[normalize-space()])]';
         $end   = false;
@@ -64,7 +65,7 @@ class AbstractOperation
      * @param SimpleXMLElement $xml
      * @return void
      */
-    protected function removeEmptyXmlAttributes(SimpleXMLElement &$xml)
+    protected function removeEmptyXmlAttributes(SimpleXMLElement $xml)
     {
         $xpath = '//*[@*]';
 
@@ -100,5 +101,18 @@ class AbstractOperation
         $this->responses[] = $response = $this->api->request($xml, $withAuth);;
 
         return $response;
+    }
+
+    abstract protected function buildXml();
+
+    protected function getResults($withAuth = true): SimpleXMLElement
+    {
+        $response = $this->request($this->buildXml(), $withAuth);
+
+        if (!$response->isSuccess()) {
+            throw new MeasoftException($response->getError());
+        }
+
+        return $response->getXml();
     }
 }

@@ -5,6 +5,7 @@ namespace Measoft;
 use Measoft\Object\Country;
 use Measoft\Operation\CalculatorOperation;
 use Measoft\Operation\CancelOrderOperation;
+use Measoft\Operation\CommitLastStatusOperation;
 use Measoft\Operation\ItemSearchOperation;
 use Measoft\Operation\CreateOrderOperation;
 use Measoft\Operation\OrderSearchOperation;
@@ -95,5 +96,10 @@ class MeasoftClient
     public function cancelOrder(): CancelOrderOperation
     {
         return new CancelOrderOperation($this->api);
+    }
+
+    public function commitLastStatus(): CommitLastStatusOperation
+    {
+        return new CommitLastStatusOperation($this->api);
     }
 }

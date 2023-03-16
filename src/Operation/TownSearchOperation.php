@@ -176,7 +176,7 @@ class TownSearchOperation extends AbstractOperation
      *
      * @return SimpleXMLElement
      */
-    private function buildXml(): SimpleXMLElement
+    protected function buildXml(): SimpleXMLElement
     {
         $xml        = $this->createXml('townlist');
         $codesearch = $xml->addChild('codesearch');
@@ -207,15 +207,7 @@ class TownSearchOperation extends AbstractOperation
      */
     public function search(): array
     {
-        $response = $this->request($this->buildXml(), false);
-
-        if (!$response->isSuccess()) {
-            throw new MeasoftException($response->getError());
-        }
-
-        $resultXml = $response->getXml();
-
-        foreach ($resultXml as $item) {
+        foreach ($this->getResults(false) as $item) {
             $result[] = Town::getFromXml($item);
         }
 

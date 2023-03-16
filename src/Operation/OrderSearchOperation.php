@@ -4,12 +4,26 @@ namespace Measoft\Operation;
 
 use Measoft\MeasoftException;
 use Measoft\Object\Order;
+use Measoft\Traits\Client;
+use Measoft\Traits\StreamId;
 use SimpleXMLElement;
 
 class OrderSearchOperation extends AbstractOperation
 {
-    /** @var string $client Признак клиента или агента */
-    private $client;
+    use Client;
+    use StreamId;
+
+    public const DONE_FLAG_NOT_DONE = 1;
+    public const DONE_FLAG_DONE = 2;
+    public const DONE_FLAG_NEW = 3;
+    public const DONE_FLAG_DELIVERY = 4;
+
+    private const DONE_FLAGS = [
+        self::DONE_FLAG_NOT_DONE => 'ONLY_NOT_DONE',
+        self::DONE_FLAG_DONE     => 'ONLY_DONE',
+        self::DONE_FLAG_NEW      => 'ONLY_NEW',
+        self::DONE_FLAG_DELIVERY => 'ONLY_DELIVERY',
+    ];
 
     /** @var string $orderNumber Поиск по номеру заказа */
     private $orderNumber;
@@ -47,19 +61,6 @@ class OrderSearchOperation extends AbstractOperation
 
     /** @var string $quickStatus Указывает "глубину" передаваемых статусов */
     private $quickStatus;
-
-    /**
-     * Признак клиента или агента
-     *
-     * @param bool $client true - клиент, false - агент
-     * @return self
-     */
-    public function client(bool $client = true): self
-    {
-        $this->client = $client ? 'CLIENT' : 'AGENT';
-
-        return $this;
-    }
 
     /**
      * Поиск по номеру заказа
@@ -162,29 +163,8 @@ class OrderSearchOperation extends AbstractOperation
      * @param int $done
      * @return self
      */
-    public function done(int $done): self
-    {
-        switch ($done) {
-            case 1:
-                $this->done = 'ONLY_NOT_DONE';
-                break;
-
-            case 2:
-                $this->done = 'ONLY_DONE';
-                break;
-
-            case 3:
-                $this->done = 'ONLY_NEW';
-                break;
-
-            case 4:
-                $this->done = 'ONLY_DELIVERY';
-                break;
-
-            default:
-                $this->done = null;
-                break;
-        }
+    public function done(int $done): self {
+        $this->done = self::DONE_FLAGS[$done] ?? null;
 
         return $this;
     }
@@ -220,10 +200,10 @@ class OrderSearchOperation extends AbstractOperation
      *
      * @return SimpleXMLElement
      */
-    private function buildXml(): SimpleXMLElement
+    protected function buildXml(): SimpleXMLElement
     {
         $xml = $this->createXml('statusreq');
-        $xml->addChild('client', $this->client);
+        $this->buildClientXML($xml);
         $xml->addChild('orderno', $this->orderNumber);
         $xml->addChild('orderno2', $this->orderNumber2);
         $xml->addChild('ordercode', $this->orderCode);
@@ -234,6 +214,7 @@ class OrderSearchOperation extends AbstractOperation
         $xml->addChild('done', $this->done);
         $xml->addChild('changes', $this->onlyLast);
         $xml->addChild('quickstatus', $this->quickStatus);
+        $this->buildStreamIdXML($xml);
 
         return $xml;
     }
@@ -246,15 +227,7 @@ class OrderSearchOperation extends AbstractOperation
      */
     public function search(): array
     {
-        $response = $this->request($this->buildXml());
-
-        if (!$response->isSuccess()) {
-            throw new MeasoftException($response->getError());
-        }
-
-        $resultXml = $response->getXml();
-
-        foreach ($resultXml as $item) {
+        foreach ($this->getResults() as $item) {
             $result[] = Order::getFromXml($item);
         }
 

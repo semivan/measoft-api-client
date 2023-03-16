@@ -153,7 +153,7 @@ class PvzSearchOperation extends AbstractOperation
      *
      * @return SimpleXMLElement
      */
-    private function buildXml(): SimpleXMLElement
+    protected function buildXml(): SimpleXMLElement
     {
         $xml = $this->createXml('pvzlist');
         $this->buildLimitXML($xml);
@@ -181,15 +181,7 @@ class PvzSearchOperation extends AbstractOperation
      */
     public function search(): array
     {
-        $response = $this->request($this->buildXml());
-
-        if (!$response->isSuccess()) {
-            throw new MeasoftException($response->getError());
-        }
-
-        $resultXml = $response->getXml();
-
-        foreach ($resultXml as $item) {
+        foreach ($this->getResults() as $item) {
             $result[] = Pvz::getFromXml($item);
         }
 

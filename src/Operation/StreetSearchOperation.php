@@ -96,7 +96,7 @@ class StreetSearchOperation extends AbstractOperation
      *
      * @return SimpleXMLElement
      */
-    private function buildXml(): SimpleXMLElement
+    protected function buildXml(): SimpleXMLElement
     {
         $xml        = $this->createXml('streetlist');
         $conditions = $xml->addChild('conditions');
@@ -124,15 +124,7 @@ class StreetSearchOperation extends AbstractOperation
             throw new MeasoftException('Не указан населенный пункт');
         }
 
-        $response = $this->request($this->buildXml(), false);
-
-        if (!$response->isSuccess()) {
-            throw new MeasoftException($response->getError());
-        }
-
-        $resultXml = $response->getXml();
-
-        foreach ($resultXml as $item) {
+        foreach ($this->getResults(false) as $item) {
             $result[] = Street::getFromXml($item);
         }
 
