@@ -22,7 +22,7 @@ trait StreamId
     public function setStreamId(int $streamId): self
     {
         if ($streamId < 100 or $streamId > 10000) {
-            throw new InvalidArgumentException('Недопустимое значение streamId: %d', $streamId);
+            throw new InvalidArgumentException(sprintf('Недопустимое значение streamId: %d', $streamId));
         }
 
         $this->streamId = $streamId;
