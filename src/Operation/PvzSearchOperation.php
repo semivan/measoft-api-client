@@ -14,6 +14,9 @@ class PvzSearchOperation extends AbstractOperation
     /** @var string $town Поиск по городу получателя */
     private $town;
 
+    /** @var string $address Фильтр по адресу */
+    private $address;
+
     /** @var int $code Код пункта выдачи */
     private $code;
 
@@ -44,6 +47,19 @@ class PvzSearchOperation extends AbstractOperation
     public function town(string $town): self
     {
         $this->town = $town;
+
+        return $this;
+    }
+
+    /**
+     * Фильтр по адресу. Работает только если задан фильтр по городу
+     *
+     * @param string $address Адрес
+     * @return self
+     */
+    public function address(string $address): self
+    {
+        $this->address = $address;
 
         return $this;
     }
@@ -159,6 +175,7 @@ class PvzSearchOperation extends AbstractOperation
         $this->buildLimitXML($xml);
 
         $xml->addChild('town', $this->town);
+        $xml->addChild('address', $this->address);
         $xml->addChild('code', $this->code);
         $xml->addChild('parentcode', $this->parentCode);
         $xml->addChild('acceptcash', $this->acceptCash);
