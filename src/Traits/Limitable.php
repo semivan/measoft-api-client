@@ -61,7 +61,7 @@ trait Limitable
     {
         $limit = $xml->addChild('limit');
 
-        if ($limit) {
+        if ($limit !== null) {
             $limit->addChild('limitfrom', $this->offset);
             $limit->addChild('limitcount', $this->limit);
             $limit->addChild('countall', $this->countAll ? 'YES' : null);
